@@ -30,7 +30,7 @@ DEBUG = True
 
 AUTH_USER_MODEL= 'accounts.CustomUser'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -78,7 +78,10 @@ CORS_ORIGIN_WHITELIST = (
     "http://localhost:8000",
 )
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://enlighten-institute.onrender.com",
+    "http://127.0.0.1:8000",
+]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
