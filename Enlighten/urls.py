@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from allauth.account.views import confirm_email
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/course/', include('course.urls')),
+    path('api/', include('accounts.urls')),
     path('api/department/', include('department.urls')),
     path('api/enrollment/', include('enrollment.urls')),
     path('api-auth/', include('rest_framework.urls')),
