@@ -180,5 +180,5 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = env("EMAIL")
 EMAIL_HOST_PASSWORD = env("EMAIL_PASSWORD")
-SITE_URL = 'https://e-school-backend.onrender.com/' 
+SITE_URL = 'https://enlighten-institute.onrender.com' 
 SITE_ID=1
