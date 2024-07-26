@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from allauth.account.views import confirm_email
+from accounts.views import CustomConfirmEmailView,account_inactive
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +27,7 @@ urlpatterns = [
     path('api/auth/', include("dj_rest_auth.urls")),
     path("api/auth/", include("django.contrib.auth.urls")),
     path('api/auth/registration/', include("dj_rest_auth.registration.urls")),
+    path('api/auth/registration/account_confirm_email/<str:key>/', CustomConfirmEmailView.as_view(), 
+    name='account_confirm_email'),
+    path('account/inactive/', account_inactive, name="account_inactive"),
 ]
