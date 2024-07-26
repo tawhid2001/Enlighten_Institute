@@ -78,6 +78,10 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
 }
 
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserSerializer',
+}
+
 # CORS_ORIGIN_WHITELIST = (
 #     "http://localhost:3000",
 #     "http://localhost:8000",
