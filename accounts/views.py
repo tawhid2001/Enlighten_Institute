@@ -42,5 +42,5 @@ class CustomConfirmEmailView(ConfirmEmailView):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist, EmailAddress.DoesNotExist):
             return HttpResponse('Invalid confirmation link.', status=400)
 
-    def account_inactive(request):
-        return render(request, 'account_inactive.html')
+def account_inactive(request):
+     return render(request, 'account_inactive.html')
