@@ -5,13 +5,13 @@ from rest_framework import status,viewsets
 from .models import Course,Lesson,LessonProgress
 from .serializers import CourseListSerializer,LessonProgressSerializer,ProgressSerializer
 from django.http import Http404
-# from .permissions import IsTeacherrOrReadOnly
+from .permissions import IsTeacherrOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
 class CourseList(APIView):
-    # permission_classes = [IsTeacherrOrReadOnly]
+    permission_classes = [IsTeacherrOrReadOnly]
     def get(self,request,format=None):
         user = request.user
         if user.user_type == 'teacher':
