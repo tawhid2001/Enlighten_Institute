@@ -82,6 +82,11 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserSerializer',
 }
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
 # CORS_ORIGIN_WHITELIST = (
 #     "http://localhost:3000",
 #     "http://localhost:8000",
