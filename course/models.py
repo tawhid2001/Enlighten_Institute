@@ -14,19 +14,11 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
 
-class Module(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    course = models.ForeignKey(Course, related_name='modules', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
 
 class Lesson(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    module = models.ForeignKey(Module, related_name='lessons', on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, related_name='lessons', on_delete=models.CASCADE,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

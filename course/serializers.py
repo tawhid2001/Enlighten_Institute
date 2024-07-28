@@ -18,6 +18,11 @@ class CourseListSerializer(serializers.ModelSerializer):
     def get_department_name(self, obj):
         return obj.department.name
     
+class LessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = '__all__'
+    
 class LessonProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = LessonProgress
