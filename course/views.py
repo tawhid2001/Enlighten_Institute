@@ -106,13 +106,7 @@ class LessonDetails(APIView):
         lesson =self.get_object(pk)
         lesson.delete()
         return Response(status=status.HTTP_204_NO_CONTENT) 
-    
-   
 
-    def get_lessons_in_course(self, course_id):
-        lessons = Lesson.objects.filter(course_id=course_id)
-        serializer = LessonSerializer(lessons, many=True)
-        return Response(serializer.data)   
 
 
 class CourseLessons(APIView):
