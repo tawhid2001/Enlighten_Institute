@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from .models import Enrollment,CourseResult
 from .serializers import EnrollmentSerializer,CourseResultSerializer
 from rest_framework.permissions import IsAuthenticated
+from course.models import Course
 
 # Create your views here.
 
@@ -36,6 +37,14 @@ class StudentEnrollmentsView(APIView):
         serializer = EnrollmentSerializer(enrollments, many=True)
         return Response(serializer.data)
     
+
+class EnrolledStudentsView(APIView):
+
+    def get(self, request, course_id, *args, **kwargs):
+        enrollments = Enrollment.objects.filter(course_id=course_id)
+        serializer = EnrollmentSerializer(enrollments, many=True)
+        return Response(serializer.data)
+    
 class CourseResultViewSet(viewsets.ModelViewSet):
     queryset = CourseResult.objects.all()
     serializer_class = CourseResultSerializer
@@ -47,3 +56,28 @@ class CourseResultViewSet(viewsets.ModelViewSet):
         elif user.user_type == 'student':
             return CourseResult.objects.filter(enrollment__student=user)
         return CourseResult.objects.none()
+    
+    
+class EditCourseResultViewSet(viewsets.ViewSet):
+    serializer_class = CourseResultSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.user_type == 'teacher':
+            return CourseResult.objects.filter(enrollment__course__teacher=user)
+        elif user.user_type == 'student':
+            return CourseResult.objects.filter(enrollment__student=user)
+        return CourseResult.objects.none()
+
+    def update(self, request, pk=None):
+        queryset = self.get_queryset()
+        try:
+            instance = queryset.get(pk=pk)
+        except CourseResult.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.serializer_class(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
