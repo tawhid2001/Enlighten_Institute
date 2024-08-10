@@ -3,30 +3,36 @@ from rest_framework import viewsets,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Enrollment,CourseResult
-from .serializers import EnrollmentSerializer,CourseResultSerializer
+from .serializers import EnrollmentListSerializer,EnrollmentPostSerailzer,CourseResultSerializer
 from rest_framework.permissions import IsAuthenticated
 from course.models import Course
 
 # Create your views here.
 
-class EnrollmentViewSet(viewsets.ModelViewSet):
+class EnrollmentListViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Enrollment.objects.all()
-    serializer_class = EnrollmentSerializer
+    serializer_class = EnrollmentListSerializer
 
     def get_queryset(self):
-        student = self.request.user
-        return Enrollment.objects.filter(student=student)
+        if self.request.user.is_authenticated:
+            return Enrollment.objects.filter(student=self.request.user)
+        return Enrollment.objects.none()
     
+class EnrollmentPostViewSet(viewsets.ModelViewSet):
+    queryset = Enrollment.objects.all()
+    serializer_class = EnrollmentPostSerailzer
+
     def create(self, request, *args, **kwargs):
         student = request.user
         course_id = request.data.get('course')
         if Enrollment.objects.filter(student=student, course_id=course_id).exists():
             return Response({'detail': 'Already enrolled in this course.'}, status=status.HTTP_400_BAD_REQUEST)
+
         data = {'student': student.id, 'course': course_id}
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED) 
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class StudentEnrollmentsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -34,7 +40,7 @@ class StudentEnrollmentsView(APIView):
     def get(self, request, *args, **kwargs):
         student = request.user
         enrollments = Enrollment.objects.filter(student=student)
-        serializer = EnrollmentSerializer(enrollments, many=True)
+        serializer = EnrollmentListSerializer(enrollments, many=True)
         return Response(serializer.data)
     
 
@@ -42,7 +48,7 @@ class EnrolledStudentsView(APIView):
 
     def get(self, request, course_id, *args, **kwargs):
         enrollments = Enrollment.objects.filter(course_id=course_id)
-        serializer = EnrollmentSerializer(enrollments, many=True)
+        serializer = EnrollmentListSerializer(enrollments, many=True)
         return Response(serializer.data)
     
 class CourseResultViewSet(viewsets.ModelViewSet):

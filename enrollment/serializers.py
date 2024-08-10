@@ -8,7 +8,15 @@ class StudentSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'username', 'email', 'first_name', 'last_name']  # Add other fields as necessary
 
-class EnrollmentSerializer(serializers.ModelSerializer):
+
+class EnrollmentPostSerailzer(serializers.ModelSerializer):
+    student = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())  # Accepts a user ID
+
+    class Meta:
+        model = Enrollment
+        fields = ['id', 'enrolled_at', 'student', 'course']
+
+class EnrollmentListSerializer(serializers.ModelSerializer):
     student = StudentSerializer(read_only=True)  # Nested serializer to include student details
 
     class Meta:
