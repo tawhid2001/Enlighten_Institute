@@ -108,15 +108,6 @@ class LessonDetails(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT) 
 
 
-
-class CourseLessons(APIView):
-    # permission_classes = [IsTeacherrOrReadOnly]
-    def get(self, request, pk, format=None):
-        course = Course.objects.get(pk=pk)
-        lessons = course.lessons.all()
-        serializer = LessonSerializer(lessons,many=True)
-        return Response(serializer.data)
-    
 class LessonProgressViewSet(viewsets.ModelViewSet):
     queryset = LessonProgress.objects.all()
     serializer_class = LessonProgressSerializer

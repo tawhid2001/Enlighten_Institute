@@ -87,3 +87,13 @@ class EditCourseResultViewSet(viewsets.ViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+
+class EnrollmentByStudentAndCourseView(APIView):
+    def get(self, request, student_id, course_id):
+        try:
+            enrollment = Enrollment.objects.get(student_id=student_id, course_id=course_id)
+            serializer = EnrollmentPostSerailzer(enrollment)
+            return Response(serializer.data)
+        except Enrollment.DoesNotExist:
+            return Response({"error": "Enrollment not found"}, status=404)
