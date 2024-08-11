@@ -8,7 +8,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     department_name = serializers.SerializerMethodField()
     class Meta:
         model = Course
-        fields = ['id', 'course_name', 'course_code', 'description', 'created_at', 'slug', 'teacher', 'teacher_name', 'department', 'department_name']
+        fields = ['id', 'course_name', 'course_code', 'description', 'image' ,'created_at', 'slug', 'teacher', 'teacher_name', 'department', 'department_name']
 
         read_only_fields = ["teacher",]
 
@@ -17,6 +17,11 @@ class CourseListSerializer(serializers.ModelSerializer):
 
     def get_department_name(self, obj):
         return obj.department.name
+    
+    def get_image_url(self, obj):
+        if obj.image:
+            return obj.image.url
+        return 'default.jpg'
     
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:

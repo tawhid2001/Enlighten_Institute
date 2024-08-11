@@ -9,5 +9,4 @@ urlpatterns = [
     path('courselessons/<int:pk>/', CourseLessonsWithProgress.as_view(),name="course_lessons"),
     path('lesson/<int:pk>/', LessonDetails.as_view(),name="lesson_detail"),
     path('lessonprogress/',LessonProgressViewSet.as_view({'get': 'list', 'post': 'create'}),name="lesson-progress"),
-    
 ]

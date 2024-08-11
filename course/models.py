@@ -6,7 +6,7 @@ class Course(models.Model):
     course_name = models.CharField(max_length=200)
     course_code = models.CharField(max_length=200, unique=True)
     description = models.TextField()
-    image = models.ImageField(upload_to='course/media/uploads/',blank=True,null=True, default='course/media/default.jpg')
+    image = models.ImageField(upload_to='uploads/',default='default.jpg')
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, related_name='courses', on_delete=models.CASCADE, default=None)
     created_at = models.DateTimeField(auto_now_add=True)

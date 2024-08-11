@@ -11,9 +11,11 @@ from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
+
 class CourseList(APIView):
-    permission_classes = [IsTeacherrOrReadOnly]
-    def get(self,request,format=None):
+    permission_classes = [IsAuthenticated, IsTeacherrOrReadOnly]
+
+    def get(self, request, format=None):
         user = request.user
         if user.user_type == 'teacher':
             courses = Course.objects.filter(teacher=user)
@@ -22,15 +24,15 @@ class CourseList(APIView):
         serializer = CourseListSerializer(courses, many=True)
         return Response(serializer.data)
 
-    def post(self,request,format=None):
-        serializer = CourseListSerializer(data=request.data)
-        data = request.data
-        data['teacher'] = request.user.id
-        serializer.teacher = request.user
+    def post(self, request, format=None):
+        data = request.data.copy()
+        data['teacher'] = request.user.id  # Automatically associate the course with the logged-in teacher
+        serializer = CourseListSerializer(data=data)
+
         if serializer.is_valid():
-            serializer.save(teacher = request.user)
+            serializer.save(teacher=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CourseDetail(APIView):
     # permission_classes = [IsTeacherrOrReadOnly]
