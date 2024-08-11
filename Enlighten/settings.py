@@ -145,6 +145,9 @@ DATABASES = {
 }
 
 
+# Base url to serve media files
+MEDIA_URL = '/media/'
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 

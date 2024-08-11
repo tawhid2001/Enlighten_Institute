@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from accounts.views import CustomConfirmEmailView,account_inactive
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,3 +32,5 @@ urlpatterns = [
     name='account_confirm_email'),
     path('account/inactive/', account_inactive, name="account_inactive"),
 ]
+
+urlpatterns += static(settings.MEDIA_URL)
