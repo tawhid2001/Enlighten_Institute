@@ -6,11 +6,20 @@ from .models import Course,Lesson,LessonProgress
 class CourseListSerializer(serializers.ModelSerializer):
     teacher_name = serializers.SerializerMethodField()
     department_name = serializers.SerializerMethodField()
+    image_url = serializers.CharField(required=False,allow_blank=True)
     class Meta:
         model = Course
-        fields = ['id', 'course_name', 'course_code', 'description', 'image' ,'created_at', 'slug', 'teacher', 'teacher_name', 'department', 'department_name']
+        fields = ['id', 'course_name', 'course_code', 'description', 'image_url' ,'created_at', 'slug', 'teacher', 'teacher_name', 'department', 'department_name']
 
         read_only_fields = ["teacher",]
+
+    def create(self,validated_data):
+        image_url = validated_data.pop('image_url',None)
+        course = Course.objects.create(**validated_data)
+        if image_url:
+            course.image_url = image_url
+            course.save()
+        return course
 
     def get_teacher_name(self, obj):
         return obj.teacher.get_full_name() or obj.teacher.username
@@ -18,10 +27,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     def get_department_name(self, obj):
         return obj.department.name
     
-    def get_image_url(self, obj):
-        if obj.image:
-            return obj.image.url
-        return 'default.jpg'
+    
     
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:

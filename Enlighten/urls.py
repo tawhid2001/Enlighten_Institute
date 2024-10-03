@@ -32,5 +32,3 @@ urlpatterns = [
     name='account_confirm_email'),
     path('account/inactive/', account_inactive, name="account_inactive"),
 ]
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

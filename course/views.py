@@ -8,6 +8,7 @@ from .serializers import CourseListSerializer,LessonProgressSerializer,ProgressS
 from django.http import Http404
 from .permissions import IsTeacherrOrReadOnly
 from rest_framework.permissions import IsAuthenticated
+import requests
 
 # Create your views here.
 
@@ -26,7 +27,25 @@ class CourseList(APIView):
 
     def post(self, request, format=None):
         data = request.data.copy()
-        data['teacher'] = request.user.id  # Automatically associate the course with the logged-in teacher
+        data['teacher'] = request.user.id  # Associate the course with the logged-in teacher
+
+        # Handling image upload to Imgbb
+        image = request.FILES.get('image')
+        if image:
+            imgbb_api_key = '74a46b9f674cfe097a70c2c8824668a7'
+            imgbb_response = requests.post(
+                f"https://api.imgbb.com/1/upload?key={imgbb_api_key}",
+                files={'image': image}
+            )
+            print(imgbb_response.json())  # Debugging: print full Imgbb response
+            if imgbb_response.status_code == 200:
+                image_url = imgbb_response.json().get('data', {}).get('url')
+                print(f"Image URL: {image_url}")  # Debugging: print extracted URL
+                if image_url:
+                    data['image_url'] = image_url
+            else:
+                return Response({"error": "Image upload failed"}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = CourseListSerializer(data=data)
 
         if serializer.is_valid():
@@ -34,6 +53,7 @@ class CourseList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    
 class CourseDetail(APIView):
     # permission_classes = [IsTeacherrOrReadOnly]
     def get_object(self,pk):
@@ -47,14 +67,37 @@ class CourseDetail(APIView):
         serializer = CourseListSerializer(course)
         return Response(serializer.data)
     
-    def put(self,request,pk,format=None):
+    def put(self, request, pk, format=None):
         course = self.get_object(pk)
-        serializer = CourseListSerializer(course,data=request.data)
+        data = request.data.copy()
 
+        # Check if a new image is being uploaded
+        image = request.FILES.get('image')
+        if image:
+            imgbb_api_key = '74a46b9f674cfe097a70c2c8824668a7'
+            imgbb_response = requests.post(
+                f"https://api.imgbb.com/1/upload?key={imgbb_api_key}",
+                files={'image': image}
+            )
+            
+            # Debugging: print Imgbb response to verify image upload
+            print(imgbb_response.json())
+            
+            if imgbb_response.status_code == 200:
+                image_url = imgbb_response.json().get('data', {}).get('url')
+                print(f"New Image URL: {image_url}")
+                if image_url:
+                    data['image_url'] = image_url  # Update the image URL in the data
+            else:
+                return Response({"error": "Image upload failed"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Serialize and update the course
+        serializer = CourseListSerializer(course, data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
     def delete(self,request,pk,format=None):
         course =self.get_object(pk)
